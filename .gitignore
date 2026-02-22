@@ -1,0 +1,45 @@
+# --- STM32 & C/C++ ---
+# Loại bỏ các thư mục build sinh ra bởi CubeIDE hoặc Makefile
+[Dd]ebug/
+[Rr]elease/
+build/
+bin/
+obj/
+
+# Loại bỏ các file thực thi nhị phân (chúng ta sẽ dùng GitHub Artifacts để lưu)
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# Loại bỏ file rác khi biên dịch
+*.o
+*.d
+*.su
+*.crf
+*.lnp
+
+# --- STM32CubeIDE / Keil Project files ---
+# Nếu bạn muốn người khác dùng chung cấu hình IDE thì có thể bỏ comment
+.project
+.cproject
+.settings/
+.mxproject
+*.launch
+
+# --- Docker ---
+.docker_data/
+
+# --- Python (cho Scripts & HIL) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# --- OS rác ---
+.DS_Store
+Thumbs.db

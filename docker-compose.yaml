@@ -1,0 +1,9 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: docker/build.Dockerfile
+    volumes:
+      - .:/app
+    # Để file build ra có quyền user hiện tại (tránh lỗi root trên Linux)
+    user: "${UID}:${GID}"
