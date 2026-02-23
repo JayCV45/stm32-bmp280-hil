@@ -23,7 +23,7 @@ COPY . .
 # 4. Create build directory and compile with UNIT_TEST flag
 # We define -DUNIT_TEST=ON so your code knows to use the mock HAL
 RUN mkdir -p build && cd build && \
-    cmake -DUNIT_TEST=ON ../tests && \  # <--- Change this from .. to ../tests
+    cmake -DUNIT_TEST=ON ../tests && \  
     make
 
 # 5. Set the default command to run tests and output results
