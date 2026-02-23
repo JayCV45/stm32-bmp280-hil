@@ -2,9 +2,9 @@ name: STM32 HIL Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
@@ -13,32 +13,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          clean: true
 
-      - name: Build Firmware with Docker
+      - name: Build Firmware with Docker (no root-owned artifacts)
+        shell: bash
         run: |
-          # Sử dụng tên biến khác để tránh lỗi Read-only biến UID trong Bash
-          CURRENT_UID=$(id -u)
-          CURRENT_GID=$(id -g)
-          export UID=$CURRENT_UID
-          export GID=$CURRENT_GID
+          set -euo pipefail
+          export HOST_UID="$(id -u)"
+          export HOST_GID="$(id -g)"
           docker compose run --rm builder make -C firmware clean all
 
       - name: Run HIL Test
+        shell: bash
         run: |
-          # Đảm bảo python3-venv đã được cài đặt trên máy host
-          # Tạo môi trường ảo nếu chưa tồn tại
-          if [ ! -d "venv" ]; then
-            python3 -m venv venv
-          fi
-          
-          # Kích hoạt môi trường ảo
+          set -euo pipefail
+          python3 -m venv venv
           source venv/bin/activate
-          
-          # Cập nhật pip và cài đặt thư viện
-          pip install --upgrade pip
-          if [ -f requirements.txt ]; then 
-            pip install -r requirements.txt
-          fi
-          
-          # Chạy script test
-          python3 scripts/flash_and_test.py
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python scripts/flash_and_test.py

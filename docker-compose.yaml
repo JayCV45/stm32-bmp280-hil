@@ -1,9 +1,7 @@
 services:
   builder:
-    build:
-      context: .
-      dockerfile: docker/build.Dockerfile
+    # build: ./docker   # keep your existing build config
+    user: "${HOST_UID}:${HOST_GID}"
     volumes:
-      - .:/app
-    # Để file build ra có quyền user hiện tại (tránh lỗi root trên Linux)
-    user: "${UID}:${GID}"
+      - .:/work
+    working_dir: /work
