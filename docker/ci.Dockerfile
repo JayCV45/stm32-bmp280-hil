@@ -28,4 +28,4 @@ RUN mkdir -p build && cd build && \
 
 # 5. Set the default command to run tests and output results
 # This ensures the container fails if any test fails
-CMD ["sh", "-c", "./build/tests/unit/unit_tests && ./build/tests/integration/integration_tests"]
+CMD ["sh", "-c", "./build/unit/unit_tests && ./build/integration/integration_tests"]
