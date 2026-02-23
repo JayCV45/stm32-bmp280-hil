@@ -136,7 +136,7 @@ int main(void)
     int len = sprintf(msg, "Temperature: %.2f C\r\n", temperature);
     HAL_UART_Transmit(&huart2, (uint8_t*)msg, len, 100);
     
-    HAL_Delay(1000);
+    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

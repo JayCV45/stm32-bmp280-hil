@@ -1,0 +1,26 @@
+name: STM32 HIL Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    # Đây là dòng cực kỳ quan trọng: trỏ đúng vào máy XPS của bạn
+    runs-on: [self-hosted, stm32-board]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Firmware with Docker
+        run: |
+          docker compose run --rm builder make -C firmware clean all
+
+      - name: Run HIL Test
+        run: |
+          # Kích hoạt venv hiện có trên máy hoặc tạo nhanh cái mới
+          source venv/bin/activate
+          python3 scripts/flash_and_test.py
