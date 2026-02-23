@@ -6,4 +6,4 @@ services:
     volumes:
       - .:/app
     # Để file build ra có quyền user hiện tại (tránh lỗi root trên Linux)
-    user: "${UID}:${GID}"
+    user: "${USER_ID}:${GROUP_ID}"
