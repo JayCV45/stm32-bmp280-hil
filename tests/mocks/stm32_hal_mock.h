@@ -3,60 +3,51 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef enum {
-    HAL_OK = 0x00U,
-    HAL_ERROR = 0x01U,
-    HAL_BUSY = 0x02U,
-    HAL_TIMEOUT = 0x03U
-} HAL_StatusTypeDef;
-
+// ---- Minimal STM32 HAL type stubs used by your driver ----
 typedef struct {
-    uint32_t Instance;
+  int _unused;
 } I2C_HandleTypeDef;
 
-static uint8_t mock_bmp280_regs[256];
+typedef enum {
+  HAL_OK       = 0x00U,
+  HAL_ERROR    = 0x01U,
+  HAL_BUSY     = 0x02U,
+  HAL_TIMEOUT  = 0x03U
+} HAL_StatusTypeDef;
 
-static inline HAL_StatusTypeDef HAL_I2C_Mem_Read(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t MemAddress,
-                                                  uint16_t MemAddSize, uint8_t *pData, uint16_t Size, uint32_t Timeout) {
-    (void)hi2c;
-    (void)DevAddress;
-    (void)MemAddSize;
-    (void)Timeout;
+// ---- Shared mock register map (ONE instance across all translation units) ----
+extern uint8_t mock_bmp280_regs[256];
 
-    if (pData == 0) {
-        return HAL_ERROR;
-    }
+// Optional helper to reset between tests
+void mock_bmp280_reset_regs(void);
 
-    memcpy(pData, &mock_bmp280_regs[MemAddress], Size);
-    return HAL_OK;
-}
+// ---- HAL I2C memory APIs used by the driver ----
+HAL_StatusTypeDef HAL_I2C_Mem_Read(
+    I2C_HandleTypeDef* hi2c,
+    uint16_t DevAddress,
+    uint16_t MemAddress,
+    uint16_t MemAddSize,
+    uint8_t* pData,
+    uint16_t Size,
+    uint32_t Timeout);
 
-static inline HAL_StatusTypeDef HAL_I2C_Mem_Write(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t MemAddress,
-                                                   uint16_t MemAddSize, uint8_t *pData, uint16_t Size, uint32_t Timeout) {
-    (void)hi2c;
-    (void)DevAddress;
-    (void)MemAddSize;
-    (void)Timeout;
-
-    if (pData == 0) {
-        return HAL_ERROR;
-    }
-
-    memcpy(&mock_bmp280_regs[MemAddress], pData, Size);
-    return HAL_OK;
-}
-
-static inline void HAL_Delay(uint32_t Delay) {
-    (void)Delay;
-}
+HAL_StatusTypeDef HAL_I2C_Mem_Write(
+    I2C_HandleTypeDef* hi2c,
+    uint16_t DevAddress,
+    uint16_t MemAddress,
+    uint16_t MemAddSize,
+    const uint8_t* pData,
+    uint16_t Size,
+    uint32_t Timeout);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  
