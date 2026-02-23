@@ -17,7 +17,7 @@ jobs:
           clean: true
 
       - name: Build Firmware with Docker (no root-owned artifacts)
-        shell: bash
+        shell: 
         run: |
           set -euo pipefail
           export HOST_UID="$(id -u)"
@@ -25,11 +25,20 @@ jobs:
           docker compose run --rm builder make -C firmware clean all
 
       - name: Run HIL Test
-        shell: bash
+        shell: 
         run: |
-          set -euo pipefail
-          python3 -m venv venv
+          # Đảm bảo python3-venv đã được cài đặt trên máy host
+          # Tạo môi trường ảo nếu chưa tồn tại
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
+          
           source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          python scripts/flash_and_test.py
+          
+          # Cập nhật pip và cài đặt thư viện
+          pip install --upgrade pip
+          if [ -f requirements.txt ]; then 
+            pip install -r requirements.txt
+          fi
+          
+          python3 scripts/flash_and_test.py
