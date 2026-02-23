@@ -20,14 +20,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+
       - name: Build Firmware with Docker
         run: |
-          # Sử dụng tên biến khác để tránh lỗi Read-only biến UID trong Bash
+          # Lấy ID của user hiện tại trên máy XPS
           export USER_ID=$(id -u)
           export GROUP_ID=$(id -g)
-          # Nhớ cập nhật lại tên biến nếu bạn có dùng chúng trong docker-compose.yml
+          
+          # Chạy docker-compose và truyền biến môi trường vào
           docker compose run --rm builder make -C firmware clean all
-
+      
+      
       - name: Run HIL Test
         run: |
           # Đảm bảo python3-venv đã được cài đặt trên máy host
