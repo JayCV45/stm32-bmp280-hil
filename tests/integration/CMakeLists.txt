@@ -1,0 +1,2 @@
+add_executable(integration_tests test_bmp280_flow.cpp)
+target_link_libraries(integration_tests GTest::gtest_main)
