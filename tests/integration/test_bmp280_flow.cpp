@@ -1,16 +1,15 @@
 #include <gtest/gtest.h>
+
 #include "BMP280_Wrapper.h"
 #include "../mocks/stm32_hal_mock.h"
 
 TEST(BMP280_Flow, InitializationSequence) {
-    // 1. Arrange: Set the "Virtual Sensor" ID register to the correct value
-    mock_bmp280_regs[0xD0] = 0x58; 
+    mock_bmp280_regs[0xD0] = 0x58;
 
-    BMP280_Wrapper wrapper;
+    I2C_HandleTypeDef mock_i2c = {0};
+    BMP280_Handle wrapper = BMP280_Create(&mock_i2c);
 
-    // 2. Act: Try to initialize
-    bool success = wrapper.begin();
+    int success = BMP280_Init(wrapper);
 
-    // 3. Assert: Did the driver correctly read 0x58 and return true?
-    EXPECT_TRUE(success);
+    EXPECT_EQ(success, 1);
 }
