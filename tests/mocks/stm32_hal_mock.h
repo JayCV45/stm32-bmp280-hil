@@ -19,7 +19,8 @@ typedef struct {
     uint32_t Instance;
 } I2C_HandleTypeDef;
 
-static uint8_t mock_bmp280_regs[256];
+// IMPORTANT: shared across translation units
+extern uint8_t mock_bmp280_regs[256];
 
 static inline HAL_StatusTypeDef HAL_I2C_Mem_Read(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t MemAddress,
                                                   uint16_t MemAddSize, uint8_t *pData, uint16_t Size, uint32_t Timeout) {
