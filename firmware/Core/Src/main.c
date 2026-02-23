@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "BMP280_Wrapper.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,8 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+BMP280_Handle bmp;
+float temperature;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,7 +96,30 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  
+  // --- BẮT ĐẦU ĐOẠN MÃ QUÉT I2C ---
+  printf("\r\n--- I2C Bus Scanner ---\r\n");
+  for (uint16_t i = 1; i < 128; i++) {
+      // HAL_I2C_IsDeviceReady yêu cầu địa chỉ đã dịch trái 1 bit (i << 1)
+      // Thay vì sprintf + HAL_UART_Transmit, giờ bạn chỉ cần:
+      if (HAL_I2C_IsDeviceReady(&hi2c1, (i << 1), 3, 5) == HAL_OK) {
+          printf("Found I2C device at: 0x%02X\r\n", i);
+      }
+  }
+  printf("Scan Finished.\r\n\r\n");
+  // --- KẾT THÚC ĐOẠN MÃ QUÉT I2C ---
 
+  printf("Step 1: Creating Instance...\r\n");
+  bmp = BMP280_Create(&hi2c1);
+
+  printf("Step 2: Calling Init...\r\n");
+  HAL_Delay(100); 
+
+  if (BMP280_Init(bmp)) {
+      printf("Step 3: BMP280 Init Success!\r\n");
+  } else {
+      printf("Step 3: BMP280 Init FAILED!\r\n");
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,6 +129,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    temperature = BMP280_ReadTemperature(bmp);
+    
+    // Tạo chuỗi và gửi qua UART2
+    char msg[50];
+    int len = sprintf(msg, "Temperature: %.2f C\r\n", temperature);
+    HAL_UART_Transmit(&huart2, (uint8_t*)msg, len, 100);
+    
+    HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -262,7 +295,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+int __io_putchar(int ch)
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 10);
+  return ch;
+}
 /* USER CODE END 4 */
 
 /**
