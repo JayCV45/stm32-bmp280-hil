@@ -24,6 +24,17 @@ jobs:
 
       - name: Run HIL Test
         run: |
-          # Kích hoạt venv hiện có trên máy hoặc tạo nhanh cái mới
+          # 1. Tạo môi trường ảo mới nếu chưa có
+          python3 -m venv venv
+          
+          # 2. Kích hoạt môi trường ảo
           source venv/bin/activate
+          
+          # 3. Cập nhật pip và cài đặt thư viện từ requirements.txt
+          pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          
+          # 4. Chạy script test
           python3 scripts/flash_and_test.py
+      
+
