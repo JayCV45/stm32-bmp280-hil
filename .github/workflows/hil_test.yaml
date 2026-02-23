@@ -17,10 +17,9 @@ jobs:
       - name: Build Firmware with Docker
         run: |
           # Sử dụng tên biến khác để tránh lỗi Read-only biến UID trong Bash
-          CURRENT_UID=$(id -u)
-          CURRENT_GID=$(id -g)
-          export UID=$CURRENT_UID
-          export GID=$CURRENT_GID
+          export USER_ID=$(id -u)
+          export GROUP_ID=$(id -g)
+          # Nhớ cập nhật lại tên biến nếu bạn có dùng chúng trong docker-compose.yml
           docker compose run --rm builder make -C firmware clean all
 
       - name: Run HIL Test
