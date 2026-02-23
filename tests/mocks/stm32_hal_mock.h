@@ -1,6 +1,7 @@
 #ifndef STM32_HAL_MOCK_H
 #define STM32_HAL_MOCK_H
 
+#pragma once
 #include <stdint.h>
 #include <string.h>
 
