@@ -1,7 +1,15 @@
 #ifndef BMP280_HPP
 #define BMP280_HPP
 
-#include "stm32f4xx_hal.h"
+// --- THE CI GATE ---
+#ifdef UNIT_TEST
+    #include "stm32_hal_mock.h" // This will be provided by your tests/mocks folder
+#else
+    #include "stm32f4xx_hal.h"  // The real HAL for your STM32F4
+#endif
+// -------------------
+
+#include <stdint.h>
 
 class BMP280 {
 public:

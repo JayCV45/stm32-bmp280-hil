@@ -20,7 +20,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-
+      - name: Build and Run CI Tests
+        run: |
+          docker build -t bmp280-ci -f docker/ci.Dockerfile .
+          docker run --rm bmp280-ci
+      
       - name: Build Firmware with Docker
         run: |
           # Lấy ID của user hiện tại trên máy XPS
