@@ -11,6 +11,12 @@ jobs:
     runs-on: [self-hosted, stm32-board]
 
     steps:
+      - name: Cleanup previous build (Fix Permission Denied)
+        run: |
+          if [ -d "firmware/build" ]; then
+            sudo rm -rf firmware/build
+          fi
+          
       - name: Checkout code
         uses: actions/checkout@v4
 
