@@ -13,9 +13,7 @@ jobs:
     steps:
       - name: Cleanup previous build (Fix Permission Denied)
         run: |
-          if [ -d "firmware/build" ]; then
-            sudo rm -rf firmware/build
-          fi
+          rm -rf firmware/build || true
           
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,11 +26,14 @@ jobs:
       - name: Build Firmware with Docker
         run: |
           # Lấy ID của user hiện tại trên máy XPS
-          export USER_ID=$(id -u)
-          export GROUP_ID=$(id -g)
+          # export USER_ID=$(id -u)
+          # export GROUP_ID=$(id -g)
           
           # Chạy docker-compose và truyền biến môi trường vào
-          docker compose run --rm builder make -C firmware clean all
+          # docker compose run --rm builder make -C firmware clean all
+
+          # Build as the runner user so firmware/build isn't root-owned
+          docker compose run --rm --user "$(id -u):$(id -g)" builder make -C firmware clean all
       
       
       - name: Run HIL Test
