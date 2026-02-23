@@ -17,6 +17,9 @@ jobs:
 
       - name: Build Firmware with Docker
         run: |
+          # Thêm UID và GID để Docker mapping đúng user
+          export UID=$(id -u)
+          export GID=$(id -g)
           docker compose run --rm builder make -C firmware clean all
 
       - name: Run HIL Test
