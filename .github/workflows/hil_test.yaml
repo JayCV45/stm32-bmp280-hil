@@ -11,47 +11,47 @@ jobs:
     runs-on: [self-hosted, stm32-board]
 
     steps:
-      - name: Cleanup previous build (Fix Permission Denied)
+      - name: Cleanup previous build 
         run: |
+          # Delete the previous firmware build directory (Fix Permission Denied).
           rm -rf firmware/build || true
           
       - name: Checkout code
+        # Fetch the repository source code so the runner can build and test it.
         uses: actions/checkout@v4
 
       - name: Build and Run CI Tests
         run: |
+          # Build the CI Docker image (unit tests / host tests).
+          # Run the container and remove it after it exits.
           docker build -t bmp280-ci -f docker/ci.Dockerfile .
           docker run --rm bmp280-ci
       
       - name: Build Firmware with Docker
         run: |
-          # Lấy ID của user hiện tại trên máy XPS
-          # export USER_ID=$(id -u)
-          # export GROUP_ID=$(id -g)
-          
-          # Chạy docker-compose và truyền biến môi trường vào
-          # docker compose run --rm builder make -C firmware clean all
-
-          # Build as the runner user so firmware/build isn't root-owned
+          # Build firmware inside the Docker Compose "builder" service.
+          # Run the container as the runner user (not root) so firmware/build
+          # is not created with root ownership (avoids permission issues later).
           docker compose run --rm --user "$(id -u):$(id -g)" builder make -C firmware clean all
-      
-      
+        
       - name: Run HIL Test
+        # Create a Python virtual environment (venv) on the host if it doesn't exist.
+        # Activate it, upgrade pip, install dependencies, then run the HIL script.
         run: |
-          # Đảm bảo python3-venv đã được cài đặt trên máy host
-          # Tạo môi trường ảo nếu chưa tồn tại
+          # Ensure python3-venv is installed on the host machine
+          # Create the virtual environment if it doesn't exist
           if [ ! -d "venv" ]; then
             python3 -m venv venv
           fi
           
-          # Kích hoạt môi trường ảo
+          # Activate the virtual environment
           source venv/bin/activate
           
-          # Cập nhật pip và cài đặt thư viện
+          # Upgrade pip and install required libraries
           pip install --upgrade pip
           if [ -f requirements.txt ]; then 
             pip install -r requirements.txt
           fi
           
-          # Chạy script test
+          # Run the HIL test script
           python3 scripts/flash_and_test.py
