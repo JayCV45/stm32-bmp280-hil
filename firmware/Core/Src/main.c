@@ -97,24 +97,27 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   
-  // --- BẮT ĐẦU ĐOẠN MÃ QUÉT I2C ---
+  // --- START I2C SCAN SECTION ---
   printf("\r\n--- I2C Bus Scanner ---\r\n");
   for (uint16_t i = 1; i < 128; i++) {
-      // HAL_I2C_IsDeviceReady yêu cầu địa chỉ đã dịch trái 1 bit (i << 1)
-      // Thay vì sprintf + HAL_UART_Transmit, giờ bạn chỉ cần:
+      // HAL_I2C_IsDeviceReady expects the 7-bit address left-shifted by 1 (i << 1).
+      // If the device ACKs, it is present on the bus.
       if (HAL_I2C_IsDeviceReady(&hi2c1, (i << 1), 3, 5) == HAL_OK) {
           printf("Found I2C device at: 0x%02X\r\n", i);
       }
   }
   printf("Scan Finished.\r\n\r\n");
-  // --- KẾT THÚC ĐOẠN MÃ QUÉT I2C ---
+  // --- END I2C SCAN SECTION ---
 
   printf("Step 1: Creating Instance...\r\n");
+  // Create a BMP280 driver instance bound to I2C1.
   bmp = BMP280_Create(&hi2c1);
 
   printf("Step 2: Calling Init...\r\n");
+  // Give the sensor time to power up before initializing.
   HAL_Delay(100); 
 
+  // Initialize the BMP280 and report result.
   if (BMP280_Init(bmp)) {
       printf("Step 3: BMP280 Init Success!\r\n");
   } else {
@@ -129,9 +132,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // Read temperature from BMP280.
     temperature = BMP280_ReadTemperature(bmp);
     
-    // Tạo chuỗi và gửi qua UART2
+    // Format a message and transmit it over UART2.
     char msg[50];
     int len = sprintf(msg, "Temperature: %.2f C\r\n", temperature);
     HAL_UART_Transmit(&huart2, (uint8_t*)msg, len, 100);
