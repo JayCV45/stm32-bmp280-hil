@@ -1,10 +1,10 @@
-# Sử dụng image ubuntu làm gốc
+# Use Ubuntu as the base image
 FROM ubuntu:22.04
 
-# Tránh các câu hỏi tương tác khi cài đặt
+# Avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Cài đặt các công cụ cần thiết: Arm Toolchain, Make, CMake, Python
+# Install required tools: ARM toolchain, Make, CMake, Python, etc.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc-arm-none-eabi \
     libnewlib-arm-none-eabi \
@@ -16,12 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Thiết lập thư mục làm việc trong container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Add export-build script (only used when explicitly called)
+# Add the build_firmware script (only used when explicitly called)
 COPY docker/build_firmware.sh /usr/local/bin/build_firmware.sh
 RUN chmod +x /usr/local/bin/build_firmware.sh
 
-# Lệnh mặc định khi container chạy
+# Default command when the container runs
 CMD ["make", "-j$(nproc)"]

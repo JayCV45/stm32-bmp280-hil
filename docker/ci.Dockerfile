@@ -1,3 +1,4 @@
+# Use Ubuntu as the base image
 FROM ubuntu:22.04
 
 # 1. Install build tools, GTest, and lcov for code coverage reports
